@@ -13,7 +13,7 @@ function alertErr(e) {
 }
 
 function quantumVisible(algo) {
-  $("wrap-quantum").style.display = (algo === "rr" || algo === "mlq") ? "flex" : "none";
+  $("wrap-quantum").style.display = (algo === "rr") ? "flex" : "none";
 }
 
 function enviarScheduler() {
@@ -55,15 +55,15 @@ export function initControls() {
 
   $("sel-preset").onchange = () => {
     const n = $("sel-preset").value;
-    if (n === "demo20") { postJSON("/api/demo20").catch(alertErr); }
+    if (n === "demo_workload") { postJSON("/api/demo20").catch(alertErr); }
     else if (n) { postJSON("/api/presets/" + n).catch(alertErr); }
   };
 
   $("btn-demo").onclick = () => postJSON("/api/demo20").catch(alertErr);
-  $("btn-generar").onclick = () => {
-    const n = parseInt(prompt("How many random processes? (1-50)", "12"));
-    if (n >= 1 && n <= 50) postJSON("/api/generar", { cantidad: n }).catch(alertErr);
-  };
+  // DISABLED:   $("btn-generar").onclick = () => {
+  // DISABLED:     const n = parseInt(prompt("How many random processes? (1-50)", "12"));
+  // DISABLED:     if (n >= 1 && n <= 50) postJSON("/api/generar", { cantidad: n }).catch(alertErr);
+  // DISABLED:   };
   $("btn-comparativa").onclick = () => abrirComparativa();
 
   // Event log

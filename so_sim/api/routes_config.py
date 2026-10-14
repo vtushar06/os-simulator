@@ -42,7 +42,7 @@ async def cambiar_estrategia(body: EstrategiaBody, request: Request):
 
 @router.post("/demo20")
 async def cargar_demo20(request: Request):
-    await _mgr(request).load_config(presets.demo20())
+    await _mgr(request).load_config(presets.demo_workload())
     return {"ok": True}
 
 
