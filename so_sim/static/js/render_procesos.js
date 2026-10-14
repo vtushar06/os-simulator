@@ -1,10 +1,10 @@
-// Tabla de PCB (coloreada por estado) + las 4 colas de procesos.
+// PCB table (colored by state) + the 4 process queues.
 import { mapProc, chip, esc } from "./state.js";
 
 const $ = (id) => document.getElementById(id);
 
 export function renderProcesos(snap) {
-  $("proc-cont").textContent = `${snap.procesos.length} procesos`;
+  $("proc-cont").textContent = `${snap.procesos.length} processes`;
   const tb = $("tbody-procesos");
   tb.innerHTML = snap.procesos.map(p => {
     const prog = p.rafaga_total ? Math.round(100 * p.cpu_consumido / p.rafaga_total) : 0;
@@ -16,7 +16,7 @@ export function renderProcesos(snap) {
       <td>${esc(p.nombre)}</td>
       <td><span class="pill estado-${p.estado}">${p.estado}</span></td>
       <td class="mono">${p.pc}</td>
-      <td>${p.prioridad}${p.nivel_mlq === "BAJA" ? "·B" : ""}</td>
+      <td>${p.prioridad}${p.nivel_mlq === "BAJA" ? "·L" : ""}</td>
       <td class="mono">${p.rafaga_restante}/${p.rafaga_total}</td>
       <td class="mono">${p.tam_total}K</td>
       <td class="mono">${dir}</td>
@@ -29,16 +29,16 @@ export function renderProcesos(snap) {
   const bloque = (etq, arr) =>
     `<div class="cola"><div class="etq">${etq} (${arr.length})</div>
      <div class="chips">${arr.length ? arr.map(pid => chip(map, pid)).join("")
-                                       : '<span class="chip vacio">vacío</span>'}</div></div>`;
+                                       : '<span class="chip vacio">empty</span>'}</div></div>`;
 
-  let html = bloque("🔵 Nuevos", c.nuevos);
+  let html = bloque("🔵 New", c.nuevos);
   if (c.mlq) {
-    html += bloque("🟡 Listos · ALTA (RR)", c.mlq.alta);
-    html += bloque("🟡 Listos · BAJA (FCFS)", c.mlq.baja);
+    html += bloque("🟡 Ready · HIGH (RR)", c.mlq.alta);
+    html += bloque("🟡 Ready · LOW (FCFS)", c.mlq.baja);
   } else {
-    html += bloque("🟡 Listos", c.listos);
+    html += bloque("🟡 Ready", c.listos);
   }
-  html += bloque("🔴 Bloqueados (E/S)", c.bloqueados);
-  html += bloque("⚫ Terminados", c.terminados);
+  html += bloque("🔴 Blocked (I/O)", c.bloqueados);
+  html += bloque("⚫ Terminated", c.terminados);
   $("colas").innerHTML = html;
 }

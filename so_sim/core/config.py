@@ -1,6 +1,6 @@
-"""Configuracion del mundo (dataclasses) + constructor del World.
+"""World configuration (dataclasses) + World constructor.
 
-Mantiene FastAPI/Pydantic fuera del nucleo: aqui solo hay objetos Python puros.
+Keeps FastAPI/Pydantic out of core: only pure Python objects here.
 """
 from dataclasses import dataclass, field
 from typing import List
@@ -11,7 +11,7 @@ from .pcb import PCB, AccesoMem, PeticionIO
 
 
 def color_para(pid: int) -> str:
-    """Color HSL estable y distinguible por pid (angulo aureo)."""
+    """Stable and distinguishable HSL color per pid (golden angle)."""
     return f"hsl({(pid * 137 + 40) % 360}, 65%, 55%)"
 
 
@@ -38,13 +38,13 @@ class DispositivoConfig:
 
 
 def _dispositivos_por_defecto() -> List[DispositivoConfig]:
-    # Los 5 dispositivos obligatorios del curso.
+    # The 5 required devices from the course.
     return [
-        DispositivoConfig("Teclado", TipoDispositivo.TECLADO.value),
-        DispositivoConfig("Disco", TipoDispositivo.DISCO.value),
-        DispositivoConfig("Impresora", TipoDispositivo.IMPRESORA.value),
+        DispositivoConfig("Keyboard", TipoDispositivo.TECLADO.value),
+        DispositivoConfig("Disk", TipoDispositivo.DISCO.value),
+        DispositivoConfig("Printer", TipoDispositivo.IMPRESORA.value),
         DispositivoConfig("Mouse", TipoDispositivo.MOUSE.value),
-        DispositivoConfig("Red", TipoDispositivo.RED.value),
+        DispositivoConfig("Network", TipoDispositivo.RED.value),
     ]
 
 

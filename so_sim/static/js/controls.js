@@ -1,4 +1,4 @@
-// Cablea la barra de control y las acciones del tablero con el API.
+// Wires the control bar and dashboard actions with the API.
 import { postJSON } from "./api.js";
 import { abrirComparativa } from "./render_comparativa.js";
 import { limpiarLog, exportarLog } from "./render_log.js";
@@ -26,9 +26,9 @@ function enviarScheduler() {
 async function cargarPresets() {
   try {
     const lista = await (await fetch("/api/presets")).json();
-    $("sel-preset").innerHTML = '<option value="">— elegir —</option>' +
+    $("sel-preset").innerHTML = '<option value="">— choose —</option>' +
       lista.map(p => `<option value="${p.nombre}" title="${p.descripcion}">${p.nombre}</option>`).join("");
-  } catch (e) { /* sin presets */ }
+  } catch (e) { /* no presets */ }
 }
 
 function activarTab(cual) {
@@ -61,20 +61,20 @@ export function initControls() {
 
   $("btn-demo").onclick = () => postJSON("/api/demo20").catch(alertErr);
   $("btn-generar").onclick = () => {
-    const n = parseInt(prompt("¿Cuántos procesos aleatorios? (1-50)", "12"));
+    const n = parseInt(prompt("How many random processes? (1-50)", "12"));
     if (n >= 1 && n <= 50) postJSON("/api/generar", { cantidad: n }).catch(alertErr);
   };
   $("btn-comparativa").onclick = () => abrirComparativa();
 
-  // Bitacora
+  // Event log
   $("btn-log-limpiar").onclick = () => limpiarLog(lastSnap);
   $("btn-log-export").onclick = () => exportarLog();
 
-  // Pestañas de memoria
+  // Memory tabs
   document.querySelectorAll(".p-mem .tab").forEach(t =>
     t.addEventListener("click", () => activarTab(t.dataset.tab)));
 
-  // Delegacion: botones de teclado (se re-renderizan)
+  // Delegation: keyboard buttons (re-rendered)
   $("io-dispositivos").addEventListener("click", (e) => {
     if (e.target.closest(".btn-teclado-senal"))
       postJSON("/api/control/teclado/senal").catch(alertErr);
@@ -89,8 +89,8 @@ export function initControls() {
   cargarPresets();
 }
 
-// Refleja el estado del servidor en los controles sin pisar lo que el usuario
-// este manipulando en ese instante.
+// Reflects server state in controls without overwriting what the user
+// is currently manipulating.
 export function syncControls(snap) {
   lastSnap = snap;
   const sched = snap.cpu.algoritmo;
@@ -102,10 +102,10 @@ export function syncControls(snap) {
     $("vel-label").textContent = snap.velocidad_ms + " ms";
   }
   quantumVisible(sched);
-  // Botones deshabilitados segun estado
+  // Buttons disabled according to state
   $("btn-play").disabled = snap.corriendo || snap.terminado || !!snap.decision_teclado;
   $("btn-step").disabled = snap.terminado || !!snap.decision_teclado;
   $("btn-pause").disabled = !snap.corriendo;
-  if (snap.decision_teclado) $("btn-play").title = "Resuelve la señal de teclado para continuar";
+  if (snap.decision_teclado) $("btn-play").title = "Resolve keyboard signal to continue";
   else $("btn-play").title = "";
 }

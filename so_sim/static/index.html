@@ -1,24 +1,24 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Simulador de Sistema Operativo</title>
+  <title>Operating System Simulator</title>
   <link rel="stylesheet" href="/static/css/styles.css">
 </head>
 <body>
   <header class="barra-sup">
     <div class="titulo">
-      <h1>🖥️ Simulador de Sistema Operativo</h1>
-      <span class="sub">Procesos · Memoria física · E/S · <i>(paginación: módulo avanzado)</i></span>
+      <h1>🖥️ Operating System Simulator</h1>
+      <span class="sub">Processes · Physical Memory · I/O · <i>(paging: advanced module)</i></span>
     </div>
     <div class="estado-global">
       <div class="reloj">tick <b id="tick-actual">0</b></div>
-      <div id="estado-sim" class="badge pausado">PAUSADO</div>
+      <div id="estado-sim" class="badge pausado">PAUSED</div>
     </div>
   </header>
 
-  <!-- Barra de controles: todo lo mas usado siempre visible -->
+  <!-- Control bar: all frequently used controls always visible -->
   <section class="controles">
     <div class="grupo">
       <button id="btn-play" class="btn primario">▶</button>
@@ -27,23 +27,23 @@
       <button id="btn-reset" class="btn peligro">⟲</button>
     </div>
     <div class="grupo">
-      <label class="lab">Velocidad
+      <label class="lab">Speed
         <input type="range" id="vel" min="50" max="2000" step="50" value="600">
         <span id="vel-label" class="mono">600 ms</span>
       </label>
     </div>
     <div class="grupo">
-      <label class="lab">Planificador
+      <label class="lab">Scheduler
         <select id="sel-scheduler">
-          <optgroup label="Obligatorios">
+          <optgroup label="Required">
             <option value="fcfs">FCFS</option>
-            <option value="sjf">SJF (no apropiativo)</option>
-            <option value="prioridad_ap">Prioridad (apropiativa)</option>
+            <option value="sjf">SJF (non-preemptive)</option>
+            <option value="prioridad_ap">Priority (preemptive)</option>
             <option value="rr">Round Robin</option>
           </optgroup>
-          <optgroup label="Adicionales">
+          <optgroup label="Additional">
             <option value="srtf">SRTF</option>
-            <option value="prioridad_np">Prioridad (no apr.)</option>
+            <option value="prioridad_np">Priority (non-preempt.)</option>
             <option value="mlq">MLQ</option>
           </optgroup>
         </select>
@@ -53,7 +53,7 @@
       </label>
     </div>
     <div class="grupo">
-      <label class="lab">Estrategia memoria
+      <label class="lab">Memory strategy
         <select id="sel-estrategia">
           <option value="first_fit">First-Fit</option>
           <option value="best_fit">Best-Fit</option>
@@ -62,32 +62,32 @@
       </label>
     </div>
     <div class="grupo">
-      <label class="lab">Escenario
+      <label class="lab">Scenario
         <select id="sel-preset"></select>
       </label>
     </div>
     <div class="grupo grupo-acciones">
-      <button id="btn-demo" class="btn demo">👥 Cargar demo de 20</button>
-      <button id="btn-generar" class="btn">🎲 Generar aleatorio</button>
-      <button id="btn-editor" class="btn">✏️ Crear proceso</button>
-      <button id="btn-comparativa" class="btn">📊 Comparativa</button>
+      <button id="btn-demo" class="btn demo">👥 Load 20-process demo</button>
+      <button id="btn-generar" class="btn">🎲 Generate random</button>
+      <button id="btn-editor" class="btn">✏️ Create process</button>
+      <button id="btn-comparativa" class="btn">📊 Comparison</button>
     </div>
   </section>
 
   <main class="tablero">
-    <!-- FILA 1 -->
+    <!-- ROW 1 -->
     <section class="panel p-cpu">
       <div class="panel-cab"><h2>🧠 CPU</h2><span id="cpu-alg" class="tag"></span></div>
       <div class="panel-cuerpo" id="cpu-actual"></div>
     </section>
 
     <section class="panel p-proc">
-      <div class="panel-cab"><h2>📋 Procesos (PCB)</h2><span id="proc-cont" class="tag"></span></div>
+      <div class="panel-cab"><h2>📋 Processes (PCB)</h2><span id="proc-cont" class="tag"></span></div>
       <div class="panel-cuerpo scroll">
         <table class="tabla" id="tabla-procesos">
           <thead><tr>
-            <th>PID</th><th>Nombre</th><th>Estado</th><th>PC</th><th>Prio</th>
-            <th>Rest.</th><th>Tam</th><th>Dir</th><th>Progreso</th>
+            <th>PID</th><th>Name</th><th>State</th><th>PC</th><th>Prio</th>
+            <th>Rem.</th><th>Size</th><th>Addr</th><th>Progress</th>
           </tr></thead>
           <tbody id="tbody-procesos"></tbody>
         </table>
@@ -95,22 +95,22 @@
     </section>
 
     <section class="panel p-metr">
-      <div class="panel-cab"><h2>📈 Métricas</h2></div>
+      <div class="panel-cab"><h2>📈 Metrics</h2></div>
       <div class="panel-cuerpo scroll" id="tabla-metricas"></div>
     </section>
 
-    <!-- FILA 2 -->
+    <!-- ROW 2 -->
     <section class="panel p-colas">
-      <div class="panel-cab"><h2>🗂️ Colas</h2></div>
+      <div class="panel-cab"><h2>🗂️ Queues</h2></div>
       <div class="panel-cuerpo scroll" id="colas"></div>
     </section>
 
     <section class="panel p-mem">
       <div class="panel-cab">
-        <h2>💾 Memoria física</h2>
+        <h2>💾 Physical Memory</h2>
         <div class="tabs">
-          <button class="tab activa" data-tab="fisica">Física</button>
-          <button class="tab" data-tab="paginacion">Paginación (PLUS)</button>
+          <button class="tab activa" data-tab="fisica">Physical</button>
+          <button class="tab" data-tab="paginacion">Paging (PLUS)</button>
         </div>
       </div>
       <div class="panel-cuerpo scroll">
@@ -120,7 +120,7 @@
     </section>
 
     <section class="panel p-io">
-      <div class="panel-cab"><h2>🖧 Dispositivos E/S</h2></div>
+      <div class="panel-cab"><h2>🖧 I/O Devices</h2></div>
       <div class="panel-cuerpo scroll">
         <div id="io-decision" class="io-decision oculto"></div>
         <div id="io-dispositivos" class="io-grid"></div>
@@ -129,53 +129,53 @@
 
     <section class="panel p-log">
       <div class="panel-cab">
-        <h2>📜 Bitácora</h2>
+        <h2>📜 Event Log</h2>
         <div class="log-acciones">
-          <button id="btn-log-limpiar" class="btn ed-mini">Limpiar</button>
-          <button id="btn-log-export" class="btn ed-mini">Exportar .txt</button>
+          <button id="btn-log-limpiar" class="btn ed-mini">Clear</button>
+          <button id="btn-log-export" class="btn ed-mini">Export .txt</button>
         </div>
       </div>
       <div class="panel-cuerpo scroll"><ul id="bitacora" class="bitacora"></ul></div>
     </section>
   </main>
 
-  <!-- Gantt colapsable (bonus, no ocupa la pantalla principal) -->
+  <!-- Collapsible Gantt (bonus, doesn't take up main screen) -->
   <details class="gantt-det">
-    <summary>📊 Diagrama de Gantt (CPU por tick)</summary>
+    <summary>📊 Gantt Chart (CPU per tick)</summary>
     <div class="gantt-scroll"><canvas id="cv-gantt" height="110"></canvas></div>
   </details>
 
-  <!-- ===== Editor de procesos / escenario ===== -->
+  <!-- ===== Process / scenario editor ===== -->
   <div id="modal-editor" class="modal oculto">
     <div class="modal-caja">
       <div class="modal-cab">
-        <h2>✏️ Crear / editar procesos</h2>
+        <h2>✏️ Create / edit processes</h2>
         <button id="ed-cerrar" class="btn">✕</button>
       </div>
       <div class="modal-cuerpo">
         <fieldset class="ed-global">
-          <legend>Parámetros globales</legend>
-          <label>Planificador
+          <legend>Global parameters</legend>
+          <label>Scheduler
             <select id="ed-scheduler">
               <option value="fcfs">FCFS</option>
               <option value="sjf">SJF</option>
-              <option value="prioridad_ap">Prioridad (apr.)</option>
+              <option value="prioridad_ap">Priority (preempt.)</option>
               <option value="rr">Round Robin</option>
               <option value="srtf">SRTF</option>
-              <option value="prioridad_np">Prioridad (no apr.)</option>
+              <option value="prioridad_np">Priority (non-preempt.)</option>
               <option value="mlq">MLQ</option>
             </select>
           </label>
           <label>Quantum <input id="ed-quantum" type="number" min="1" max="20" value="3" class="num"></label>
-          <label>Costo cambio ctx <input id="ed-costocc" type="number" min="0" max="10" value="0" class="num"></label>
-          <label>Tasa error % <input id="ed-error-rate" type="number" min="0" max="100" step="0.1" value="0" class="num"></label>
+          <label>Context switch cost <input id="ed-costocc" type="number" min="0" max="10" value="0" class="num"></label>
+          <label>Error rate % <input id="ed-error-rate" type="number" min="0" max="100" step="0.1" value="0" class="num"></label>
         </fieldset>
         <fieldset class="ed-global">
-          <legend>Memoria física (obligatorio)</legend>
-          <label>RAM total (KB) <input id="ed-ram" type="number" min="256" value="16384" class="num"></label>
-          <label>RAM SO (KB) <input id="ed-ramso" type="number" min="0" value="2048" class="num"></label>
-          <label>Bloque (KB) <input id="ed-bloque" type="number" min="32" max="2048" value="256" class="num"></label>
-          <label>Estrategia
+          <legend>Physical memory (required)</legend>
+          <label>Total RAM (KB) <input id="ed-ram" type="number" min="256" value="16384" class="num"></label>
+          <label>OS RAM (KB) <input id="ed-ramso" type="number" min="0" value="2048" class="num"></label>
+          <label>Block (KB) <input id="ed-bloque" type="number" min="32" max="2048" value="256" class="num"></label>
+          <label>Strategy
             <select id="ed-estrategia">
               <option value="first_fit">First-Fit</option>
               <option value="best_fit">Best-Fit</option>
@@ -184,47 +184,47 @@
           </label>
         </fieldset>
         <fieldset class="ed-global">
-          <legend>Paginación (módulo avanzado)</legend>
-          <label class="chk"><input id="ed-pag" type="checkbox" checked> Activar paginación</label>
-          <label>Marcos <input id="ed-marcos" type="number" min="1" max="32" value="4" class="num"></label>
-          <label>Bits offset <input id="ed-offset" type="number" min="4" max="16" value="12" class="num"></label>
-          <label>Reemplazo
+          <legend>Paging (advanced module)</legend>
+          <label class="chk"><input id="ed-pag" type="checkbox" checked> Enable paging</label>
+          <label>Frames <input id="ed-marcos" type="number" min="1" max="32" value="4" class="num"></label>
+          <label>Offset bits <input id="ed-offset" type="number" min="4" max="16" value="12" class="num"></label>
+          <label>Replacement
             <select id="ed-replacer">
               <option value="fifo">FIFO</option><option value="lru">LRU</option>
-              <option value="optimo">Óptimo</option><option value="reloj">Reloj</option>
+              <option value="optimo">Optimal</option><option value="reloj">Clock</option>
             </select>
           </label>
-          <label>Dispositivos <input id="ed-disp" type="text" value="Teclado, Disco, Impresora, Mouse, Red" size="34"></label>
+          <label>Devices <input id="ed-disp" type="text" value="Keyboard, Disk, Printer, Mouse, Network" size="34"></label>
         </fieldset>
         <div id="ed-procesos"></div>
         <div class="ed-add-row">
-          <button id="ed-add" class="btn">＋ Agregar proceso</button>
+          <button id="ed-add" class="btn">＋ Add process</button>
         </div>
-        <p class="ed-ayuda">Modo <b>declarativo</b>: defines tú las E/S. Modo <b>aleatorio</b>: se generan con
-          las fórmulas del sistema. Los <b>accesos a memoria</b> (página/VPN) solo aplican al módulo de paginación.</p>
+        <p class="ed-ayuda"><b>Declarative</b> mode: you define I/O. <b>Random</b> mode: generated with
+          system formulas. <b>Memory accesses</b> (page/VPN) apply only to the paging module.</p>
         <div id="ed-error" class="ed-error"></div>
       </div>
       <div class="modal-pie">
-        <button id="ed-cancelar" class="btn">Cancelar</button>
-        <button id="ed-cargar" class="btn primario">Cargar al simulador</button>
+        <button id="ed-cancelar" class="btn">Cancel</button>
+        <button id="ed-cargar" class="btn primario">Load to simulator</button>
       </div>
     </div>
   </div>
 
-  <!-- ===== Comparativa ===== -->
+  <!-- ===== Comparison ===== -->
   <div id="modal-comp" class="modal oculto">
     <div class="modal-caja">
       <div class="modal-cab">
-        <h2>📊 Comparativa de algoritmos y estrategias</h2>
+        <h2>📊 Algorithm and strategy comparison</h2>
         <button id="comp-cerrar" class="btn">✕</button>
       </div>
       <div class="modal-cuerpo" id="comp-cuerpo">
-        <p class="ed-ayuda">Corre el escenario actual con cada opción (sin afectar la simulación en vivo).</p>
+        <p class="ed-ayuda">Runs current scenario with each option (without affecting live simulation).</p>
         <div id="comp-tablas"></div>
       </div>
       <div class="modal-pie">
-        <button id="comp-csv-sched" class="btn">Exportar planificadores .csv</button>
-        <button id="comp-csv-mem" class="btn">Exportar estrategias .csv</button>
+        <button id="comp-csv-sched" class="btn">Export schedulers .csv</button>
+        <button id="comp-csv-mem" class="btn">Export strategies .csv</button>
       </div>
     </div>
   </div>

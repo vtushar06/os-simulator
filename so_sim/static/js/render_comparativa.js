@@ -1,24 +1,24 @@
-// Modal de comparativa: consulta /api/comparativa y arma dos tablas (planificadores
-// y estrategias de memoria), resaltando el mejor valor de cada metrica y con
-// exportacion a CSV.
+// Comparison modal: queries /api/comparativa and builds two tables (schedulers
+// and memory strategies), highlighting best value for each metric and with
+// CSV export.
 const $ = (id) => document.getElementById(id);
-let datos = null;   // ultima comparativa cargada
+let datos = null;   // last comparison loaded
 
-// metrica -> [etiqueta, "min"|"max"]  (direccion del "mejor")
+// metric -> [label, "min"|"max"]  ("better" direction)
 const MET_SCHED = {
-  espera: ["Espera promedio", "min"], retorno: ["Turnaround promedio", "min"],
-  respuesta: ["Respuesta promedio", "min"], con_error: ["Procesos con error", "min"],
+  espera: ["Average wait", "min"], retorno: ["Average turnaround", "min"],
+  respuesta: ["Average response", "min"], con_error: ["Processes with error", "min"],
 };
 const MET_MEM = {
-  asignaciones_ok: ["Asignaciones exitosas", "max"],
-  fallos_externos: ["Fallos por fragmentación externa", "min"],
-  fragmentacion_interna: ["Fragmentación interna (KB)", "min"],
-  huecos_finales: ["Huecos libres finales", "min"],
+  asignaciones_ok: ["Successful allocations", "max"],
+  fallos_externos: ["External fragmentation failures", "min"],
+  fragmentacion_interna: ["Internal fragmentation (KB)", "min"],
+  huecos_finales: ["Final free holes", "min"],
 };
 
 function tablaTranspuesta(titulo, filas, claveCol, mets) {
   const cols = filas.map(f => f.nombre);
-  let html = `<div class="comp-tabla"><h3>${titulo}</h3><table><tr><th>Métrica</th>`;
+  let html = `<div class="comp-tabla"><h3>${titulo}</h3><table><tr><th>Metric</th>`;
   html += cols.map(c => `<th>${c}</th>`).join("") + `</tr>`;
   for (const [met, [etq, dir]] of Object.entries(mets)) {
     const vals = filas.map(f => f[met]);
@@ -37,7 +37,7 @@ function tablaTranspuesta(titulo, filas, claveCol, mets) {
 }
 
 function toCSV(filas, mets, claveId) {
-  const cabecera = ["algoritmo/estrategia", ...Object.keys(mets)].join(",");
+  const cabecera = ["algorithm/strategy", ...Object.keys(mets)].join(",");
   const lineas = filas.map(f => [f[claveId], ...Object.keys(mets).map(m => f[m])].join(","));
   return [cabecera, ...lineas].join("\n");
 }
@@ -52,15 +52,15 @@ function descargar(nombre, contenido) {
 }
 
 export async function abrirComparativa() {
-  $("comp-tablas").innerHTML = "<p>Calculando…</p>";
+  $("comp-tablas").innerHTML = "<p>Calculating…</p>";
   $("modal-comp").classList.remove("oculto");
   try {
     datos = await (await fetch("/api/comparativa")).json();
     $("comp-tablas").innerHTML =
-      tablaTranspuesta("🧠 Planificadores (mismo conjunto de procesos)", datos.schedulers, "algoritmo", MET_SCHED) +
-      tablaTranspuesta("💾 Estrategias de asignación (benchmark de fragmentación)", datos.estrategias, "estrategia", MET_MEM);
+      tablaTranspuesta("🧠 Schedulers (same process set)", datos.schedulers, "algoritmo", MET_SCHED) +
+      tablaTranspuesta("💾 Allocation strategies (fragmentation benchmark)", datos.estrategias, "estrategia", MET_MEM);
   } catch (e) {
-    $("comp-tablas").innerHTML = `<p style="color:var(--bad)">Error al calcular: ${e.message}</p>`;
+    $("comp-tablas").innerHTML = `<p style="color:var(--bad)">Calculation error: ${e.message}</p>`;
   }
 }
 

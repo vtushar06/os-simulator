@@ -8,13 +8,13 @@ from tests.helpers import correr, hist, proc
 
 def test_dispositivo_sirve_n_ticks_y_cuenta_desde_el_siguiente():
     io = IoSubsystem()
-    io.agregar(Device("Disco", "disco"))
-    io.encolar("Disco", pid=7, duracion=3)
+    io.agregar(Device("Disk", "disk"))
+    io.encolar("Disk", pid=7, duracion=3)
     # El tick en que se encola lo pone en servicio pero NO descuenta aun.
     assert io.tick() == []                       # arranca servicio
     assert io.tick() == []                       # 3 -> 2
     assert io.tick() == []                       # 2 -> 1
-    assert io.tick() == [(7, "Disco")]           # 1 -> 0: interrupcion
+    assert io.tick() == [(7, "Disk")]           # 1 -> 0: interrupcion
 
 
 def test_io_bloquea_y_libera_la_cpu():
@@ -34,9 +34,9 @@ def test_proceso_vuelve_a_listo_tras_io():
     bloqueado = False
     for _ in range(20):
         w.tick()
-        if proc(w, 1).estado.value == "BLOQUEADO":
+        if proc(w, 1).estado.value == "BLOCKED":
             bloqueado = True
             break
     assert bloqueado, "P1 deberia bloquearse por E/S"
     correr(w)
-    assert proc(w, 1).estado.value == "TERMINADO"
+    assert proc(w, 1).estado.value == "TERMINATED"

@@ -28,7 +28,7 @@ def test_todos_los_presets_terminan_y_serializan():
     for nombre in presets.PRESETS:
         w = correr(World(presets.cargar(nombre)))
         assert w.terminado, f"{nombre} no termino"
-        assert all(p.estado.value == "TERMINADO" for p in w.procesos)
+        assert all(p.estado.value == "TERMINATED" for p in w.procesos)
         snap = to_dict(w, corriendo=False, velocidad_ms=500)
         # El snapshot debe ser serializable y tener las claves del contrato.
         for clave in ("tick", "cpu", "procesos", "colas", "memoria", "io", "gantt", "metricas"):

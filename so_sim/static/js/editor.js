@@ -1,6 +1,6 @@
-// Editor de procesos / escenario: construye un escenario completo (memoria fisica,
-// paginacion, dispatcher, procesos) y lo carga via POST /api/config/scenario.
-// Validacion inline por campo antes de enviar (sin alert()).
+// Process / scenario editor: builds a complete scenario (physical memory,
+// paging, dispatcher, processes) and loads it via POST /api/config/scenario.
+// Inline field validation before sending (no alert()).
 import { postJSON } from "./api.js";
 
 const $ = (id) => document.getElementById(id);
@@ -37,31 +37,31 @@ function tarjetaProceso(p = {}) {
   card.innerHTML = `
     <div class="ed-fila">
       <label>PID <input class="ed-pid num" type="number" min="1" value="${p.pid ?? ""}"></label>
-      <label>Nombre <input class="ed-nombre" type="text" value="${(p.nombre ?? "").replace(/"/g, "")}"></label>
-      <label>Llegada <input class="ed-lleg num" type="number" min="0" value="${p.llegada ?? 0}"></label>
-      <label>Ráfaga <input class="ed-raf num" type="number" min="1" value="${p.rafaga ?? 5}"></label>
-      <label>Prioridad <input class="ed-prio num" type="number" min="0" value="${p.prioridad ?? 0}"></label>
-      <label>Nivel <select class="ed-nivel">
-        <option value="ALTA" ${p.nivel_mlq !== "BAJA" ? "selected" : ""}>ALTA</option>
-        <option value="BAJA" ${p.nivel_mlq === "BAJA" ? "selected" : ""}>BAJA</option></select></label>
-      <button class="btn peligro ed-proc-del" type="button">Eliminar</button>
+      <label>Name <input class="ed-nombre" type="text" value="${(p.nombre ?? "").replace(/"/g, "")}"></label>
+      <label>Arrival <input class="ed-lleg num" type="number" min="0" value="${p.llegada ?? 0}"></label>
+      <label>Burst <input class="ed-raf num" type="number" min="1" value="${p.rafaga ?? 5}"></label>
+      <label>Priority <input class="ed-prio num" type="number" min="0" value="${p.prioridad ?? 0}"></label>
+      <label>Level <select class="ed-nivel">
+        <option value="ALTA" ${p.nivel_mlq !== "BAJA" ? "selected" : ""}>HIGH</option>
+        <option value="BAJA" ${p.nivel_mlq === "BAJA" ? "selected" : ""}>LOW</option></select></label>
+      <button class="btn peligro ed-proc-del" type="button">Delete</button>
     </div>
     <div class="ed-fila">
-      <label>Ejecutable (KB) <input class="ed-tejec num" type="number" min="1" value="${p.tam_ejecutable ?? 128}"></label>
-      <label>Datos (KB) <input class="ed-tdatos num" type="number" min="0" value="${p.tam_datos ?? 64}"></label>
-      <label>Dinámica (KB) <input class="ed-tdin num" type="number" min="0" value="${p.tam_dinamica ?? 32}"></label>
-      <label>Interrupciones <select class="ed-modo">
-        <option value="declarativo" ${p.modo_interrupciones !== "aleatorio" ? "selected" : ""}>declarativo</option>
-        <option value="aleatorio" ${p.modo_interrupciones === "aleatorio" ? "selected" : ""}>aleatorio</option></select></label>
+      <label>Executable (KB) <input class="ed-tejec num" type="number" min="1" value="${p.tam_ejecutable ?? 128}"></label>
+      <label>Data (KB) <input class="ed-tdatos num" type="number" min="0" value="${p.tam_datos ?? 64}"></label>
+      <label>Dynamic (KB) <input class="ed-tdin num" type="number" min="0" value="${p.tam_dinamica ?? 32}"></label>
+      <label>Interrupts <select class="ed-modo">
+        <option value="declarativo" ${p.modo_interrupciones !== "aleatorio" ? "selected" : ""}>declarative</option>
+        <option value="aleatorio" ${p.modo_interrupciones === "aleatorio" ? "selected" : ""}>random</option></select></label>
     </div>
     <div class="ed-sub">
       <div class="ed-bloque">
-        <div class="ed-bloque-cab">Accesos a memoria (paginación)
+        <div class="ed-bloque-cab">Memory accesses (paging)
           <button class="btn ed-mini ed-acc-add" type="button">＋</button></div>
         <div class="ed-acc-list"></div>
       </div>
       <div class="ed-bloque">
-        <div class="ed-bloque-cab">Peticiones de E/S (modo declarativo)
+        <div class="ed-bloque-cab">I/O requests (declarative mode)
           <button class="btn ed-mini ed-io-add" type="button">＋</button></div>
         <div class="ed-io-list"></div>
       </div>
@@ -88,7 +88,7 @@ function abrir(prefill) {
   $("ed-offset").value = prefill.offset_bits || 12;
   $("ed-replacer").value = prefill.replacer || "fifo";
   $("ed-disp").value = (prefill.dispositivos || []).map(d => d.nombre).join(", ")
-    || "Teclado, Disco, Impresora, Mouse, Red";
+    || "Keyboard, Disk, Printer, Mouse, Network";
 
   const cont = $("ed-procesos");
   cont.innerHTML = "";
@@ -156,26 +156,26 @@ function recolectar() {
 function esPot2(n) { return n > 0 && (n & (n - 1)) === 0; }
 
 function validarCliente(esc) {
-  if (!esc.procesos.length) return "Agrega al menos un proceso.";
-  if (!esc.dispositivos.length) return "Define al menos un dispositivo de E/S.";
+  if (!esc.procesos.length) return "Add at least one process.";
+  if (!esc.dispositivos.length) return "Define at least one I/O device.";
   if (!esPot2(esc.tam_bloque) || esc.tam_bloque < 32 || esc.tam_bloque > 2048)
-    return "El tamaño de bloque debe ser potencia de 2 entre 32 y 2048 KB.";
-  if (esc.ram_so >= esc.ram_total) return "La RAM del SO debe ser menor que la RAM total.";
+    return "Block size must be a power of 2 between 32 and 2048 KB.";
+  if (esc.ram_so >= esc.ram_total) return "OS RAM must be less than total RAM.";
   const disponible = esc.ram_total - esc.ram_so;
   const pids = esc.procesos.map(p => p.pid);
-  if (pids.some(x => !Number.isInteger(x) || x < 1)) return "Cada proceso necesita un PID entero ≥ 1.";
-  if (new Set(pids).size !== pids.length) return "Hay PIDs repetidos.";
+  if (pids.some(x => !Number.isInteger(x) || x < 1)) return "Each process needs an integer PID ≥ 1.";
+  if (new Set(pids).size !== pids.length) return "There are duplicate PIDs.";
   for (const p of esc.procesos) {
-    if (p.rafaga < 1) return `P${p.pid}: la ráfaga debe ser ≥ 1.`;
+    if (p.rafaga < 1) return `P${p.pid}: burst must be ≥ 1.`;
     const tam = p.tam_ejecutable + p.tam_datos + p.tam_dinamica;
-    if (tam > disponible) return `P${p.pid}: necesita ${tam} KB pero solo hay ${disponible} KB para procesos.`;
+    if (tam > disponible) return `P${p.pid}: needs ${tam} KB but only ${disponible} KB available for processes.`;
     for (const x of p.io) {
       if (!esc.dispositivos.find(d => d.nombre === x.dispositivo))
-        return `P${p.pid}: E/S en un dispositivo inexistente ("${x.dispositivo}").`;
-      if (x.en_cpu >= p.rafaga) return `P${p.pid}: la E/S debe ocurrir antes de agotar la ráfaga.`;
+        return `P${p.pid}: I/O on nonexistent device ("${x.dispositivo}").`;
+      if (x.en_cpu >= p.rafaga) return `P${p.pid}: I/O must occur before exhausting burst.`;
     }
     for (const a of p.accesos) if (a.en_cpu >= p.rafaga)
-      return `P${p.pid}: un acceso a memoria ocurre después de terminar la ráfaga.`;
+      return `P${p.pid}: a memory access occurs after completing burst.`;
   }
   return null;
 }
@@ -188,14 +188,14 @@ async function cargar() {
     await postJSON("/api/config/scenario", esc);
     cerrar();
   } catch (e) {
-    $("ed-error").textContent = "El servidor rechazó el escenario: " + e.message;
+    $("ed-error").textContent = "Server rejected scenario: " + e.message;
   }
 }
 
 export function initEditor() {
   $("btn-editor").onclick = async () => {
     let actual = {};
-    try { actual = await (await fetch("/api/config/actual")).json(); } catch (e) { /* vacío */ }
+    try { actual = await (await fetch("/api/config/actual")).json(); } catch (e) { /* empty */ }
     abrir(actual);
   };
   $("ed-cerrar").onclick = cerrar;
