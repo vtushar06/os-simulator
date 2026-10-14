@@ -30,15 +30,11 @@ def transicion_valida(origen: Estado, destino: Estado) -> bool:
 
 
 class SchedAlgo(str, Enum):
-    # The 4 required algorithms from the course...
+    # The 4 required algorithms for SmartLabOS
     FCFS = "fcfs"
     SJF = "sjf"                 # non-preemptive
-    PRIORIDAD_AP = "prioridad_ap"   # preemptive priority (required)
+    PRIORIDAD_NP = "prioridad_np"   # non-preemptive priority
     RR = "rr"
-    # ...and 3 additional (bonus) that reuse the same Strategy pattern.
-    SRTF = "srtf"
-    PRIORIDAD_NP = "prioridad_np"
-    MLQ = "mlq"
 
 
 class EstrategiaMem(str, Enum):
@@ -92,15 +88,12 @@ class TipoEvento(str, Enum):
 NOMBRE_SCHED = {
     SchedAlgo.FCFS: "FCFS (first come first served)",
     SchedAlgo.SJF: "SJF (shortest job first, non-preemptive)",
-    SchedAlgo.PRIORIDAD_AP: "Priority (preemptive)",
-    SchedAlgo.RR: "Round Robin (quantum)",
-    SchedAlgo.SRTF: "SRTF (shortest remaining time first, preemptive)",
     SchedAlgo.PRIORIDAD_NP: "Priority (non-preemptive)",
-    SchedAlgo.MLQ: "MLQ (multilevel: high=RR, low=FCFS)",
+    SchedAlgo.RR: "Round Robin (quantum)",
 }
 
-# The 4 required algorithms that comparison evaluates with 20-process demo.
-SCHED_OBLIGATORIOS = [SchedAlgo.FCFS, SchedAlgo.SJF, SchedAlgo.PRIORIDAD_AP, SchedAlgo.RR]
+# The 4 required algorithms that comparison evaluates.
+SCHED_OBLIGATORIOS = [SchedAlgo.FCFS, SchedAlgo.SJF, SchedAlgo.PRIORIDAD_NP, SchedAlgo.RR]
 
 NOMBRE_ESTRATEGIA = {
     EstrategiaMem.FIRST_FIT: "First-Fit (first hole)",
