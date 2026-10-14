@@ -1,5 +1,5 @@
-// Punto de entrada: conecta el stream y re-renderiza TODO de forma idempotente
-// a partir de cada snapshot (sin estado oculto en el cliente).
+// Entry point: connects stream and re-renders EVERYTHING idempotently
+// from each snapshot (no hidden state on client).
 import { iniciarStream } from "./api.js";
 import { initControls, syncControls } from "./controls.js";
 import { initEditor } from "./editor.js";
@@ -17,9 +17,9 @@ const $ = (id) => document.getElementById(id);
 function renderTop(snap) {
   $("tick-actual").textContent = snap.tick;
   const b = $("estado-sim");
-  if (snap.terminado) { b.className = "badge terminado"; b.textContent = "TERMINADO"; }
-  else if (snap.corriendo) { b.className = "badge corriendo"; b.textContent = "EN EJECUCIÓN"; }
-  else { b.className = "badge pausado"; b.textContent = "PAUSADO"; }
+  if (snap.terminado) { b.className = "badge terminado"; b.textContent = "TERMINATED"; }
+  else if (snap.corriendo) { b.className = "badge corriendo"; b.textContent = "RUNNING"; }
+  else { b.className = "badge pausado"; b.textContent = "PAUSED"; }
 }
 
 function render(snap) {

@@ -149,7 +149,7 @@ class World:
         p = self.en_cpu
         p.cambiar_estado(Estado.BLOQUEADO)
         self.en_cpu = None
-        self.decision_teclado = {"pid": p.pid, "nombre": p.nombre, "dispositivo": "Teclado"}
+        self.decision_teclado = {"pid": p.pid, "nombre": p.nombre, "dispositivo": "Keyboard"}
         self.log.add(self.tick_actual, TipoEvento.TECLADO_SENAL,
                      f"Senal de teclado sobre {self._txt(p)}: el usuario debe Cancelar o Continuar.")
         return True
