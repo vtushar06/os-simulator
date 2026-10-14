@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Operating System Simulator</title>
+  <title>SmartLabOS</title>
   <link rel="stylesheet" href="/static/css/styles.css">
 </head>
 <body>
   <header class="barra-sup">
     <div class="titulo">
-      <h1>🖥️ Operating System Simulator</h1>
-      <span class="sub">Processes · Physical Memory · I/O · <i>(paging: advanced module)</i></span>
+      <h1>🖥️ SmartLabOS</h1>
+      <span class="sub">Process Scheduling · Physical Memory · Performance Analytics</span>
     </div>
     <div class="estado-global">
       <div class="reloj">tick <b id="tick-actual">0</b></div>
@@ -35,17 +35,10 @@
     <div class="grupo">
       <label class="lab">Scheduler
         <select id="sel-scheduler">
-          <optgroup label="Required">
-            <option value="fcfs">FCFS</option>
-            <option value="sjf">SJF (non-preemptive)</option>
-            <option value="prioridad_ap">Priority (preemptive)</option>
-            <option value="rr">Round Robin</option>
-          </optgroup>
-          <optgroup label="Additional">
-            <option value="srtf">SRTF</option>
-            <option value="prioridad_np">Priority (non-preempt.)</option>
-            <option value="mlq">MLQ</option>
-          </optgroup>
+          <option value="fcfs">FCFS</option>
+          <option value="sjf">SJF (non-preemptive)</option>
+          <option value="prioridad_np">Priority (non-preemptive)</option>
+          <option value="rr">Round Robin</option>
         </select>
       </label>
       <label id="wrap-quantum" class="lab">Quantum
@@ -67,10 +60,9 @@
       </label>
     </div>
     <div class="grupo grupo-acciones">
-      <button id="btn-demo" class="btn demo">👥 Load 20-process demo</button>
-      <button id="btn-generar" class="btn">🎲 Generate random</button>
+      <button id="btn-demo" class="btn demo">👥 Load demo workload</button>
       <button id="btn-editor" class="btn">✏️ Create process</button>
-      <button id="btn-comparativa" class="btn">📊 Comparison</button>
+      <button id="btn-comparativa" class="btn">📊 Algorithm Comparison</button>
     </div>
   </section>
 
@@ -108,14 +100,9 @@
     <section class="panel p-mem">
       <div class="panel-cab">
         <h2>💾 Physical Memory</h2>
-        <div class="tabs">
-          <button class="tab activa" data-tab="fisica">Physical</button>
-          <button class="tab" data-tab="paginacion">Paging (PLUS)</button>
-        </div>
       </div>
       <div class="panel-cuerpo scroll">
         <div id="tab-fisica"></div>
-        <div id="tab-paginacion" class="oculto"></div>
       </div>
     </section>
 
@@ -159,16 +146,12 @@
             <select id="ed-scheduler">
               <option value="fcfs">FCFS</option>
               <option value="sjf">SJF</option>
-              <option value="prioridad_ap">Priority (preempt.)</option>
-              <option value="rr">Round Robin</option>
-              <option value="srtf">SRTF</option>
               <option value="prioridad_np">Priority (non-preempt.)</option>
-              <option value="mlq">MLQ</option>
+              <option value="rr">Round Robin</option>
             </select>
           </label>
           <label>Quantum <input id="ed-quantum" type="number" min="1" max="20" value="3" class="num"></label>
           <label>Context switch cost <input id="ed-costocc" type="number" min="0" max="10" value="0" class="num"></label>
-          <label>Error rate % <input id="ed-error-rate" type="number" min="0" max="100" step="0.1" value="0" class="num"></label>
         </fieldset>
         <fieldset class="ed-global">
           <legend>Physical memory (required)</legend>
@@ -184,24 +167,14 @@
           </label>
         </fieldset>
         <fieldset class="ed-global">
-          <legend>Paging (advanced module)</legend>
-          <label class="chk"><input id="ed-pag" type="checkbox" checked> Enable paging</label>
-          <label>Frames <input id="ed-marcos" type="number" min="1" max="32" value="4" class="num"></label>
-          <label>Offset bits <input id="ed-offset" type="number" min="4" max="16" value="12" class="num"></label>
-          <label>Replacement
-            <select id="ed-replacer">
-              <option value="fifo">FIFO</option><option value="lru">LRU</option>
-              <option value="optimo">Optimal</option><option value="reloj">Clock</option>
-            </select>
-          </label>
-          <label>Devices <input id="ed-disp" type="text" value="Keyboard, Disk, Printer, Mouse, Network" size="34"></label>
+          <legend>I/O Devices (optional)</legend>
+          <label>Devices <input id="ed-disp" type="text" value="Disk" size="34"></label>
         </fieldset>
         <div id="ed-procesos"></div>
         <div class="ed-add-row">
           <button id="ed-add" class="btn">＋ Add process</button>
         </div>
-        <p class="ed-ayuda"><b>Declarative</b> mode: you define I/O. <b>Random</b> mode: generated with
-          system formulas. <b>Memory accesses</b> (page/VPN) apply only to the paging module.</p>
+        <p class="ed-ayuda">Define processes with name, arrival time, burst time, priority, and memory size.</p>
         <div id="ed-error" class="ed-error"></div>
       </div>
       <div class="modal-pie">
