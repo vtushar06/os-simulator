@@ -25,4 +25,4 @@ def test_sin_costo_no_penaliza():
     w0 = _correr(0)
     # Sin costo, la CPU no queda congelada por el dispatcher.
     assert w0.dispatcher.costo_cambio == 0
-    assert all(p.estado.value == "TERMINADO" for p in w0.procesos)
+    assert all(p.estado.value == "TERMINATED" for p in w0.procesos)

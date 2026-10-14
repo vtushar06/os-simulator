@@ -26,8 +26,8 @@ def test_tasa_error_aproximada():
 
 
 def test_generar_procesos_reproducible():
-    a = Generador(9).generar_procesos(15, ["Disco", "Red"])
-    b = Generador(9).generar_procesos(15, ["Disco", "Red"])
+    a = Generador(9).generar_procesos(15, ["Disk", "Network"])
+    b = Generador(9).generar_procesos(15, ["Disk", "Network"])
     assert a == b
     assert len(a) == 15
     for p in a:
