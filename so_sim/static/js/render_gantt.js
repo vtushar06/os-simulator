@@ -2,6 +2,7 @@
 
 export function renderGantt(snap) {
   const cv = document.getElementById("cv-gantt");
+  if (!cv) return;
   const ctx = cv.getContext("2d");
   const segs = snap.gantt || [];
   const maxTick = Math.max(1, snap.tick || 1);

@@ -37,7 +37,7 @@
         <select id="sel-scheduler">
           <option value="fcfs">FCFS</option>
           <option value="sjf">SJF (non-preemptive)</option>
-          <option value="prioridad_np">Priority (non-preemptive)</option>
+          <option value="prioridad_np">Priority (non-preemptive, lower number = higher priority)</option>
           <option value="rr">Round Robin</option>
         </select>
       </label>
@@ -78,7 +78,7 @@
       <div class="panel-cuerpo scroll">
         <table class="tabla" id="tabla-procesos">
           <thead><tr>
-            <th>PID</th><th>Name</th><th>State</th><th>PC</th><th>Prio</th>
+            <th>PID</th><th>Name</th><th>State</th><th>PC</th><th>Prio (↓)</th>
             <th>Rem.</th><th>Size</th><th>Addr</th><th>Progress</th>
           </tr></thead>
           <tbody id="tbody-procesos"></tbody>
@@ -126,11 +126,13 @@
     </section>
   </main>
 
-  <!-- Collapsible Gantt (bonus, doesn't take up main screen) -->
-  <details class="gantt-det">
-    <summary>📊 Gantt Chart (CPU per tick)</summary>
-    <div class="gantt-scroll"><canvas id="cv-gantt" height="110"></canvas></div>
-  </details>
+  <!-- Gantt Chart (always visible) -->
+  <section class="panel p-gantt" style="grid-column: 1 / -1; margin-top: 8px;">
+    <div class="panel-cab"><h2>📊 Gantt Chart (CPU per tick)</h2></div>
+    <div class="panel-cuerpo">
+      <div class="gantt-scroll"><canvas id="cv-gantt" height="110"></canvas></div>
+    </div>
+  </section>
 
   <!-- ===== Process / scenario editor ===== -->
   <div id="modal-editor" class="modal oculto">
@@ -146,12 +148,13 @@
             <select id="ed-scheduler">
               <option value="fcfs">FCFS</option>
               <option value="sjf">SJF</option>
-              <option value="prioridad_np">Priority (non-preempt.)</option>
+              <option value="prioridad_np">Priority (non-preempt., lower = higher)</option>
               <option value="rr">Round Robin</option>
             </select>
           </label>
           <label>Quantum <input id="ed-quantum" type="number" min="1" max="20" value="3" class="num"></label>
           <label>Context switch cost <input id="ed-costocc" type="number" min="0" max="10" value="0" class="num"></label>
+          <label>Error rate (%) <input id="ed-error-rate" type="number" min="0" max="100" step="0.1" value="0" class="num"></label>
         </fieldset>
         <fieldset class="ed-global">
           <legend>Physical memory (required)</legend>
@@ -163,6 +166,19 @@
               <option value="first_fit">First-Fit</option>
               <option value="best_fit">Best-Fit</option>
               <option value="worst_fit">Worst-Fit</option>
+            </select>
+          </label>
+        </fieldset>
+        <fieldset class="ed-global">
+          <legend>Paging (optional)</legend>
+          <label><input id="ed-pag" type="checkbox" checked> Enable paging</label>
+          <label>Page frames <input id="ed-marcos" type="number" min="1" max="64" value="4" class="num"></label>
+          <label>Offset bits <input id="ed-offset" type="number" min="8" max="16" value="12" class="num"></label>
+          <label>Replacer
+            <select id="ed-replacer">
+              <option value="fifo">FIFO</option>
+              <option value="lru">LRU</option>
+              <option value="optimal">Optimal</option>
             </select>
           </label>
         </fieldset>

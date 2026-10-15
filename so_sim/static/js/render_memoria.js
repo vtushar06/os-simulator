@@ -47,6 +47,7 @@ function renderFisica(snap) {
 
 function renderPaginacion(snap) {
   const cont = $("tab-paginacion");
+  if (!cont) return;  // Element removed in SmartLabOS reshape
   const m = snap.memoria;
   if (!m) {
     cont.innerHTML = `<p style="color:var(--txt2)">Paging (advanced module) is
