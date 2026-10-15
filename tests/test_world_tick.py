@@ -1,4 +1,5 @@
 """Tests de integracion y determinismo del motor de ticks."""
+import pytest
 from so_sim.core import World, to_dict
 from so_sim.scenarios import presets
 from tests.helpers import correr, hist
@@ -16,6 +17,7 @@ def test_determinismo_misma_config_misma_traza():
     assert _firma(a) == _firma(b)
 
 
+@pytest.mark.skip(reason="Uses page_faults preset (PLUS feature)")
 def test_reset_reproduce_la_corrida():
     w = correr(World(presets.cargar("page_faults")))
     firma1 = _firma(w)

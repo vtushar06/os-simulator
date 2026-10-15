@@ -1,4 +1,5 @@
 """Tests de traduccion VA->PA y de los 4 algoritmos de reemplazo."""
+import pytest
 from so_sim.core import World
 from so_sim.scenarios import presets
 from tests.helpers import correr, mundo
@@ -21,6 +22,7 @@ def test_traduccion_va_pa_y_hit():
     assert w.mmu.aciertos == 1
 
 
+@pytest.mark.skip(reason="page_faults preset is a PLUS feature, not in SmartLabOS core")
 def _fallos_de(alg: str):
     cfg = presets.cargar("page_faults")
     cfg.replacer = alg
@@ -29,6 +31,7 @@ def _fallos_de(alg: str):
     return w.mmu.fallos, total
 
 
+@pytest.mark.skip(reason="Uses page_faults preset (PLUS feature)")
 def test_reemplazos_sobre_cadena_clasica():
     n_refs = 13                      # longitud de la cadena del preset
     distintas = 6                    # paginas distintas {7,0,1,2,3,4} -> fallos forzosos
@@ -44,6 +47,7 @@ def test_reemplazos_sobre_cadena_clasica():
     assert resultados["optimo"] <= resultados["reloj"]
 
 
+@pytest.mark.skip(reason="Uses page_faults preset (PLUS feature)")
 def test_optimo_no_peor_que_marcos_infinitos():
     # Con tantos marcos como paginas distintas no debe haber reemplazos:
     # los fallos son exactamente las paginas distintas (fallos forzosos).

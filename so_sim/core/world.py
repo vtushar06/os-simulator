@@ -80,7 +80,7 @@ class World:
 
     def reset(self) -> None:
         self._inicializar()
-        self.log.add(0, TipoEvento.RESET, "Simulacion reiniciada desde la configuracion actual.")
+        self.log.add(0, TipoEvento.RESET, "Simulation restarted from current configuration.")
 
     # --------------------------------------------------------------- utilidades
     def _txt(self, p: PCB) -> str:
