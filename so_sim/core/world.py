@@ -93,7 +93,7 @@ class World:
         n = self.mem_fisica.liberar(p.pid)
         if n:
             self.log.add(self.tick_actual, TipoEvento.LIBERA_MEMORIA,
-                         f"{self._txt(p)} libera {n} bloque(s) de memoria fisica.")
+                         f"{self._txt(p)} releases {n} physical memory block(s).")
 
     def liberar_marcos(self, p: PCB) -> None:
         for _idx, vpn in self.memoria.liberar_de(p.pid):
@@ -185,7 +185,7 @@ class World:
             return
         t = self.tick_actual
 
-        # Penalizacion por page fault: la CPU queda 'congelada' N ticks.
+        # Page fault penalty: CPU is 'frozen' for N ticks.
         if self._fault_pendiente > 0:
             self._fault_pendiente -= 1
             self.cpu_historial.append(self.en_cpu.pid if self.en_cpu else None)
@@ -195,12 +195,12 @@ class World:
             self._evaluar_terminado()
             return
 
-        # Penalizacion por cambio de contexto (trabajo del dispatcher): CPU sin
+        # Context switch penalty (dispatcher work): CPU without
         # progreso util durante N ticks.
         if self._cc_pendiente > 0:
             self._cc_pendiente -= 1
             self.log.add(t, TipoEvento.CAMBIO_CONTEXTO,
-                         "Dispatcher: cambio de contexto en curso (guardando/cargando PCB).")
+                         "Dispatcher: context switch in progress (saving/loading PCB).")
             self.cpu_historial.append(None)
             self._fase_dispositivos(t)
             self._fase_contabilidad()
@@ -210,12 +210,12 @@ class World:
 
         self._fase_admision(t)
         despacho = self._fase_planificar(t)
-        # Si hubo despacho y hay costo de cambio de contexto, congela la CPU.
+        # If there was a dispatch and context switch cost, freeze CPU.
         if despacho and self.costo_cambio > 0:
             self._cc_pendiente = self.costo_cambio
             self.cpu_historial.append(None)
             self.log.add(t, TipoEvento.CAMBIO_CONTEXTO,
-                         "Dispatcher: inicia cambio de contexto.")
+                         "Dispatcher: starting context switch.")
             self._fase_dispositivos(t)
             self._fase_contabilidad()
             self.tick_actual += 1
