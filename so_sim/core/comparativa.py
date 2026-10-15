@@ -1,8 +1,8 @@
-"""Comparativas 'headless': corren el mismo escenario a termino variando el
-algoritmo de planificacion o la estrategia de memoria, y recolectan metricas para
-la tabla comparativa de la UI (y su exportacion a CSV).
+"""'Headless' comparisons: run the same scenario to completion varying the
+scheduling algorithm or memory strategy, and collect metrics for
+the comparative table in the UI (and its CSV export).
 
-No tocan la simulacion en vivo: crean World temporales y los corren hasta el final.
+They don't touch the live simulation: create temporary Worlds and run them to completion.
 """
 import copy
 from typing import Dict, List

@@ -93,7 +93,7 @@ class World:
         n = self.mem_fisica.liberar(p.pid)
         if n:
             self.log.add(self.tick_actual, TipoEvento.LIBERA_MEMORIA,
-                         f"{self._txt(p)} libera {n} bloque(s) de memoria fisica.")
+                         f"{self._txt(p)} releases {n} physical memory block(s).")
 
     def liberar_marcos(self, p: PCB) -> None:
         for _idx, vpn in self.memoria.liberar_de(p.pid):
@@ -126,19 +126,19 @@ class World:
         if quantum:
             self.cfg.quantum = quantum
         self.log.add(self.tick_actual, TipoEvento.CAMBIO_SCHED,
-                     f"Planificador cambiado a {self.cfg.scheduler} (en caliente).")
+                     f"Scheduler changed to {self.cfg.scheduler} (live).")
 
     def set_replacer(self, algo) -> None:
         self.mmu.replacer = get_replacer(algo)
         self.cfg.replacer = algo.value if hasattr(algo, "value") else str(algo)
         self.log.add(self.tick_actual, TipoEvento.CAMBIO_REPLACE,
-                     f"Algoritmo de reemplazo cambiado a {self.cfg.replacer} (en caliente).")
+                     f"Page replacement algorithm changed to {self.cfg.replacer} (live).")
 
     def set_estrategia_mem(self, algo) -> None:
         self.mem_fisica.set_estrategia(algo)
         self.cfg.estrategia_mem = algo.value if hasattr(algo, "value") else str(algo)
         self.log.add(self.tick_actual, TipoEvento.CAMBIO_MEM,
-                     f"Estrategia de memoria cambiada a {self.cfg.estrategia_mem} (en caliente).")
+                     f"Memory strategy changed to {self.cfg.estrategia_mem} (live).")
 
     # ---------------------------------------------------- teclado interactivo
     def senal_teclado_manual(self) -> bool:
@@ -167,12 +167,12 @@ class World:
                 p.t_fin = self.tick_actual
                 self._liberar_todo(p)
                 self.log.add(self.tick_actual, TipoEvento.TECLADO_CANCELA,
-                             f"{self._txt(p)} fue CANCELADO desde el teclado.")
+                             f"{self._txt(p)} was CANCELED from keyboard.")
             else:
                 p.cambiar_estado(Estado.LISTO)
                 self.scheduler.agregar(p)
                 self.log.add(self.tick_actual, TipoEvento.TECLADO_CONTINUA,
-                             f"{self._txt(p)} CONTINUA tras la senal de teclado y vuelve a LISTO.")
+                             f"{self._txt(p)} CONTINUES after keyboard signal and returns to READY.")
         self.decision_teclado = None
         self._evaluar_terminado()
 
@@ -185,7 +185,7 @@ class World:
             return
         t = self.tick_actual
 
-        # Penalizacion por page fault: la CPU queda 'congelada' N ticks.
+        # Page fault penalty: CPU is 'frozen' for N ticks.
         if self._fault_pendiente > 0:
             self._fault_pendiente -= 1
             self.cpu_historial.append(self.en_cpu.pid if self.en_cpu else None)
@@ -195,12 +195,12 @@ class World:
             self._evaluar_terminado()
             return
 
-        # Penalizacion por cambio de contexto (trabajo del dispatcher): CPU sin
+        # Context switch penalty (dispatcher work): CPU without
         # progreso util durante N ticks.
         if self._cc_pendiente > 0:
             self._cc_pendiente -= 1
             self.log.add(t, TipoEvento.CAMBIO_CONTEXTO,
-                         "Dispatcher: cambio de contexto en curso (guardando/cargando PCB).")
+                         "Dispatcher: context switch in progress (saving/loading PCB).")
             self.cpu_historial.append(None)
             self._fase_dispositivos(t)
             self._fase_contabilidad()
@@ -210,12 +210,12 @@ class World:
 
         self._fase_admision(t)
         despacho = self._fase_planificar(t)
-        # Si hubo despacho y hay costo de cambio de contexto, congela la CPU.
+        # If there was a dispatch and context switch cost, freeze CPU.
         if despacho and self.costo_cambio > 0:
             self._cc_pendiente = self.costo_cambio
             self.cpu_historial.append(None)
             self.log.add(t, TipoEvento.CAMBIO_CONTEXTO,
-                         "Dispatcher: inicia cambio de contexto.")
+                         "Dispatcher: starting context switch.")
             self._fase_dispositivos(t)
             self._fase_contabilidad()
             self.tick_actual += 1
@@ -234,7 +234,7 @@ class World:
         if falla and self.costo_fault > 0:
             self._fault_pendiente = self.costo_fault
 
-    # FASE 0: admision + carga en memoria fisica (planificador de LARGO plazo) ---
+    # PHASE 0: admission + load into physical memory (long-term scheduler) ---
     def _fase_admision(self, t: int) -> None:
         for p in self.procesos:
             if p.estado == Estado.NUEVO and p.llegada <= t:
@@ -243,11 +243,11 @@ class World:
                     p.cambiar_estado(Estado.LISTO)
                     self.scheduler.agregar(p)
                     self.log.add(t, TipoEvento.ADMISION,
-                                 f"{self._txt(p)} llega, se carga en memoria (dir {p.direccion_inicial} KB, "
-                                 f"{len(p.bloques)} bloque(s)) y pasa a LISTO.")
+                                 f"{self._txt(p)} arrives, loaded into memory (addr {p.direccion_inicial} KB, "
+                                 f"{len(p.bloques)} block(s)) and moves to READY.")
                 # Si no cabe, el proceso espera (mediano plazo) y se reintenta luego.
 
-    # FASE 1: planificar / apropiar + dispatcher --------------------------------
+    # PHASE 1: scheduling / preemption + dispatcher --------------------------------
     def _fase_planificar(self, t: int) -> bool:
         """Devuelve True si se despacho un nuevo proceso a la CPU (hubo cambio de
         contexto). Cubre los 5 eventos del planificador (ver informe)."""
@@ -261,10 +261,10 @@ class World:
             self.en_cpu = None
             if fin_quantum:
                 self.log.add(t, TipoEvento.FIN_QUANTUM,
-                             f"{self._txt(p)} agota su quantum (interrupcion de reloj) y vuelve a LISTO.")
+                             f"{self._txt(p)} exhausts quantum (timer interrupt) and returns to READY.")
             else:
                 self.log.add(t, TipoEvento.APROPIACION,
-                             f"{self._txt(p)} es apropiado y vuelve a LISTO.")
+                             f"{self._txt(p)} is preempted and returns to READY.")
 
         despacho = False
         if self.en_cpu is None:
@@ -278,10 +278,10 @@ class World:
                 self.en_cpu = nxt
                 despacho = True
                 self.log.add(t, TipoEvento.DESPACHO,
-                             f"{self._txt(nxt)} es despachado a la CPU (PC={nxt.pc}).")
+                             f"{self._txt(nxt)} is dispatched to CPU (PC={nxt.pc}).")
         return despacho
 
-    # FASE 2: memoria virtual / paginacion (Modulo PLUS) ------------------------
+    # PHASE 2: virtual memory / paging (PLUS Module) ------------------------
     def _fase_memoria(self, t: int) -> bool:
         if not self.paginacion_activa or self.en_cpu is None:
             return False
@@ -303,7 +303,7 @@ class World:
                      f"{self._txt(p)} acierto de pagina en VPN {ev['vpn']} (marco {ev['marco']}).")
         return False
 
-    # FASE 3: ejecutar rafaga (avanza el Program Counter) -----------------------
+    # PHASE 3: execute burst (advance Program Counter) -----------------------
     def _fase_ejecutar(self, t: int) -> None:
         pid_ejecuta = None
         if self.en_cpu is not None:
@@ -317,7 +317,7 @@ class World:
             pid_ejecuta = p.pid
         self.cpu_historial.append(pid_ejecuta)
 
-    # FASE 4: fin de rafaga (error/terminacion) o bloqueo por E/S ---------------
+    # PHASE 4: burst end (error/termination) or I/O block ---------------
     def _fase_fin_io(self, t: int) -> None:
         if self.en_cpu is None:
             return
@@ -329,10 +329,10 @@ class World:
             p.idx_io += 1
             self.en_cpu = None
             self.log.add(t, TipoEvento.BLOQUEO_IO,
-                         f"{self._txt(p)} solicita E/S en {pet.dispositivo} "
-                         f"({pet.duracion} ticks) y se BLOQUEA; la CPU queda libre.")
+                         f"{self._txt(p)} requests I/O on {pet.dispositivo} "
+                         f"({pet.duracion} ticks) and BLOCKS; CPU becomes idle.")
         elif p.rafaga_restante <= 0:
-            # Fin de rafaga: decide error (tasa_error) o terminacion normal.
+            # Burst end: decide error (error_rate) or normal termination.
             if self.gen_error.marca_error(self.tasa_error):
                 p.codigo_error = self.gen_error.codigo_error()
                 p.cambiar_estado(Estado.ERROR)
@@ -340,16 +340,16 @@ class World:
                 self._liberar_todo(p)
                 self.en_cpu = None
                 self.log.add(t, TipoEvento.ABORT_ERROR,
-                             f"{self._txt(p)} ABORTA con error: {p.codigo_error}.")
+                             f"{self._txt(p)} ABORTS with error: {p.codigo_error}.")
             else:
                 p.cambiar_estado(Estado.TERMINADO)
                 p.t_fin = t
                 self._liberar_todo(p)
                 self.en_cpu = None
                 self.log.add(t, TipoEvento.TERMINACION,
-                             f"{self._txt(p)} TERMINA (libera su memoria).")
+                             f"{self._txt(p)} TERMINATES (releases its memory).")
 
-    # FASE 5: avanzar dispositivos (interrupciones de fin de E/S) ---------------
+    # PHASE 5: advance devices (I/O completion interrupts) ---------------
     def _fase_dispositivos(self, t: int) -> None:
         for pid, dispositivo in self.io.tick():
             p = self.pcb[pid]
@@ -360,16 +360,16 @@ class World:
                 self.decision_teclado = {"pid": pid, "nombre": p.nombre,
                                          "dispositivo": dispositivo}
                 self.log.add(t, TipoEvento.TECLADO_SENAL,
-                             f"Interrupcion de teclado: {self._txt(p)} espera decision "
-                             "(Cancelar / Continuar).")
+                             f"Keyboard interrupt: {self._txt(p)} awaits decision "
+                             "(Cancel / Continue).")
                 continue
             p.cambiar_estado(Estado.LISTO)
             self.scheduler.agregar(p)
             self.log.add(t, TipoEvento.INTERRUPCION_IO,
-                         f"Interrupcion de {dispositivo}: {self._txt(p)} "
-                         f"completa su E/S y vuelve a LISTO.")
+                         f"{dispositivo} interrupt: {self._txt(p)} "
+                         f"completes I/O and returns to READY.")
 
-    # FASE 6: contabilidad (tiempo de espera) -----------------------------------
+    # PHASE 6: accounting (wait time) -----------------------------------
     def _fase_contabilidad(self) -> None:
         for p in self.procesos:
             if p.estado == Estado.LISTO:

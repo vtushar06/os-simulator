@@ -1,13 +1,13 @@
-"""Calculo centralizado de metricas de planificacion.
+"""Centralized scheduling metrics calculation.
 
-Convencion de tiempo: el tick `t` cubre el intervalo [t, t+1). Un proceso que
-termina durante el tick `t_fin` completa en `t_fin + 1`.
-  - retorno   = (t_fin + 1) - llegada
-  - respuesta = t_primer_despacho - llegada
-  - espera    = ticks que el proceso paso en estado LISTO (espera_acumulada)
-La espera se mide directamente (no se deriva), por lo que es exacta aun con E/S
-de por medio. Las medias se calculan solo sobre procesos TERMINADOS normalmente
-(los que abortan con ERROR se contabilizan aparte).
+Time convention: tick `t` covers the interval [t, t+1). A process that
+terminates during tick `t_fin` completes at `t_fin + 1`.
+  - turnaround = (t_fin + 1) - arrival
+  - response   = t_first_dispatch - arrival
+  - wait       = ticks the process spent in READY state (wait_accumulated)
+Wait is measured directly (not derived), so it's exact even with I/O
+in between. Averages are computed only over TERMINATED processes normally
+(those that abort with ERROR are counted separately).
 """
 from typing import List, Optional
 

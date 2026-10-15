@@ -1,4 +1,4 @@
-"""Tests deterministas de cada algoritmo de planificacion (casos de pizarra)."""
+"""Deterministic tests for each scheduling algorithm (whiteboard cases)."""
 from tests.helpers import correr, hist, mundo, proc
 
 
@@ -13,7 +13,7 @@ def test_fcfs_orden_y_metricas():
     assert hist(w) == [1, 1, 1, 2, 2]
     p1, p2 = proc(w, 1), proc(w, 2)
     assert p1.t_fin == 2 and p2.t_fin == 4
-    # retorno = (t_fin + 1) - llegada
+    # turnaround = (t_fin + 1) - arrival
     assert (p1.t_fin + 1) == 3
     assert (p2.t_fin + 1) == 5
     assert p1.espera_acumulada == 0
@@ -48,7 +48,7 @@ def test_sjf_no_apropiativo():
 
 
 def test_srtf_apropiativo():
-    # La llegada de P2 (mas corto) expropia a P1.
+    # The arrival of P2 (shorter) preempts P1.
     w = correr(mundo({
         "scheduler": "srtf",
         "procesos": [
@@ -81,12 +81,12 @@ def test_mlq_alta_antes_que_baja():
         ],
     }))
     assert hist(w) == [1, 1, 2, 2, 1, 1, 2, 2, 3, 3, 3, 3, 3, 3]
-    # El proceso de baja prioridad solo arranca cuando los de alta terminan.
+    # The low-priority process only starts when the high ones terminate.
     assert hist(w).index(3) == 8
 
 
 def test_cambio_scheduler_en_caliente():
-    # Empieza en FCFS, pasa a SRTF tras 1 tick; el cambio no rompe el estado.
+    # Starts in FCFS, switches to SRTF after 1 tick; the change doesn't break state.
     w = mundo({
         "scheduler": "fcfs",
         "procesos": [

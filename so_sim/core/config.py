@@ -106,9 +106,9 @@ class MundoConfig:
         if self.tam_bloque < 32 or self.tam_bloque > 2048:
             raise ValueError("El tamano de bloque debe estar entre 32 y 2048 KB.")
         if self.tam_bloque & (self.tam_bloque - 1) != 0:
-            raise ValueError("El tamano de bloque debe ser potencia de 2.")
+            raise ValueError("Block size must be a power of 2.")
         if self.ram_so >= self.ram_total:
-            raise ValueError("La RAM del SO debe ser menor que la RAM total.")
+            raise ValueError("OS RAM must be less than total RAM.")
         ram_disponible = self.ram_total - self.ram_so
         for p in self.procesos:
             tam = p.tam_ejecutable + p.tam_datos + p.tam_dinamica
@@ -121,14 +121,14 @@ class MundoConfig:
             raise ValueError("Debe haber al menos 1 marco de memoria.")
         # --- planificacion ---
         if self.quantum < 1:
-            raise ValueError("El quantum debe ser >= 1.")
+            raise ValueError("Quantum must be >= 1.")
         if not (0.0 <= self.tasa_error <= 1.0):
             raise ValueError("La tasa de error debe estar entre 0 y 1.")
         # --- procesos / E/S ---
         nombres_disp = {d.nombre for d in self.dispositivos}
         for p in self.procesos:
             if p.rafaga < 1:
-                raise ValueError(f"P{p.pid}: la rafaga debe ser >= 1.")
+                raise ValueError(f"P{p.pid}: burst must be >= 1.")
             for x in p.io:
                 if x["dispositivo"] not in nombres_disp:
                     raise ValueError(

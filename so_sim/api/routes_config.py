@@ -1,4 +1,4 @@
-"""Configuracion en caliente: planificador, reemplazo, escenario y presets."""
+"""Live configuration: scheduler, replacement algorithm, scenario and presets."""
 from fastapi import APIRouter, HTTPException, Request
 
 from ..core import MundoConfig
@@ -83,6 +83,6 @@ async def cargar_preset(nombre: str, request: Request):
     try:
         cfg = presets.cargar(nombre)
     except KeyError:
-        raise HTTPException(status_code=404, detail=f"Preset desconocido: {nombre}")
+        raise HTTPException(status_code=404, detail=f"Unknown preset: {nombre}")
     await _mgr(request).load_config(cfg)
     return {"ok": True}
