@@ -3,15 +3,17 @@
 import { esc } from "./state.js";
 
 const BADGE = {
-  interrupcion_io: ["be-io", "I/O"], bloqueo_io: ["be-io", "I/O"],
-  fin_quantum: ["be-reloj", "Timer"], apropiacion: ["be-reloj", "Timer"],
-  abort_error: ["be-abort", "Abort"], terminacion: ["be-otro", "End"],
-  cambio_contexto: ["be-ctx", "Context"],
-  teclado_senal: ["be-teclado", "Keyboard"], teclado_cancela: ["be-teclado", "Keyboard"],
-  teclado_continua: ["be-teclado", "Keyboard"],
+  io_interrupt: ["be-io", "I/O"], io_block: ["be-io", "I/O"],
+  quantum_end: ["be-reloj", "Timer"], preemption: ["be-reloj", "Timer"],
+  abort_error: ["be-abort", "Abort"], termination: ["be-otro", "End"],
+  context_switch: ["be-ctx", "Context"],
+  keyboard_signal: ["be-teclado", "Keyboard"], keyboard_cancel: ["be-teclado", "Keyboard"],
+  keyboard_continue: ["be-teclado", "Keyboard"],
   page_fault: ["be-otro", "Pg.Fault"], page_hit: ["be-otro", "Pg.Hit"],
-  admision: ["be-otro", "Admission"], despacho: ["be-otro", "Dispatch"],
-  carga_memoria: ["be-otro", "Mem"], libera_memoria: ["be-otro", "Mem"],
+  admission: ["be-otro", "Admission"], dispatch: ["be-otro", "Dispatch"],
+  memory_alloc: ["be-otro", "Mem"], memory_free: ["be-otro", "Mem"],
+  scheduler_change: ["be-otro", "Config"], replacer_change: ["be-otro", "Config"],
+  memory_strategy_change: ["be-otro", "Config"],
 };
 
 let minTick = 0;          // events with tick < minTick are "cleared" (client)

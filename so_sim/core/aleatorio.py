@@ -67,8 +67,8 @@ class Generador:
         return procesos
 
     def _io_aleatoria(self, burst: int, tam_kb: int, dispositivos: List[str]) -> List[Dict]:
-        """Genera peticiones de E/S para un proceso segun las formulas. Se limita
-        a que las peticiones ocurran dentro de la rafaga del proceso."""
+        """Generates I/O requests for a process according to formulas. It ensures
+        that requests occur within the process burst."""
         if not dispositivos or burst < 2:
             return []
         # cantidad de interrupciones, acotada a lo que cabe en la rafaga

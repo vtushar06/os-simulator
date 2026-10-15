@@ -61,25 +61,25 @@ class TipoDispositivo(str, Enum):
 
 
 class TipoEvento(str, Enum):
-    ADMISION = "admision"
-    DESPACHO = "despacho"
-    CAMBIO_CONTEXTO = "cambio_contexto"     # dispatcher work (cost in ticks)
-    APROPIACION = "apropiacion"
-    FIN_QUANTUM = "fin_quantum"             # timer interrupt
+    ADMISION = "admission"
+    DESPACHO = "dispatch"
+    CAMBIO_CONTEXTO = "context_switch"     # dispatcher work (cost in ticks)
+    APROPIACION = "preemption"
+    FIN_QUANTUM = "quantum_end"             # timer interrupt
     PAGE_FAULT = "page_fault"
     PAGE_HIT = "page_hit"
-    BLOQUEO_IO = "bloqueo_io"               # I/O interrupt
-    INTERRUPCION_IO = "interrupcion_io"     # I/O completion interrupt
-    CARGA_MEMORIA = "carga_memoria"         # process loaded into physical memory
-    LIBERA_MEMORIA = "libera_memoria"
-    TERMINACION = "terminacion"
+    BLOQUEO_IO = "io_block"               # I/O interrupt
+    INTERRUPCION_IO = "io_interrupt"     # I/O completion interrupt
+    CARGA_MEMORIA = "memory_alloc"         # process loaded into physical memory
+    LIBERA_MEMORIA = "memory_free"
+    TERMINACION = "termination"
     ABORT_ERROR = "abort_error"             # process terminated with error
-    TECLADO_SENAL = "teclado_senal"         # keyboard requests user decision
-    TECLADO_CANCELA = "teclado_cancela"
-    TECLADO_CONTINUA = "teclado_continua"
-    CAMBIO_SCHED = "cambio_sched"
-    CAMBIO_REPLACE = "cambio_replace"
-    CAMBIO_MEM = "cambio_mem"               # hot memory strategy change
+    TECLADO_SENAL = "keyboard_signal"         # keyboard requests user decision
+    TECLADO_CANCELA = "keyboard_cancel"
+    TECLADO_CONTINUA = "keyboard_continue"
+    CAMBIO_SCHED = "scheduler_change"
+    CAMBIO_REPLACER = "replacer_change"
+    CAMBIO_MEM = "memory_strategy_change"               # hot memory strategy change
     RESET = "reset"
     IDLE = "idle"
 

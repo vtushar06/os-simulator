@@ -14,5 +14,5 @@ REPLACERS = {
 def get_replacer(nombre) -> Replacer:
     clave = nombre.value if isinstance(nombre, ReplaceAlgo) else str(nombre)
     if clave not in REPLACERS:
-        raise ValueError(f"Algoritmo de reemplazo desconocido: {nombre}")
+        raise ValueError(f"Unknown page replacement algorithm: {nombre}")
     return REPLACERS[clave]()

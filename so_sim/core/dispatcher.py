@@ -1,9 +1,9 @@
-"""Dispatcher (despachador): modulo separado del planificador.
+"""Dispatcher (despachador): module separated from the scheduler.
 
-El planificador DECIDE que proceso sigue; el dispatcher EJECUTA el cambio de
-contexto: guarda el estado del proceso saliente en su PCB (PC incluido), carga el
-del entrante y cobra un costo en ticks (las "rafagas de cambio de contexto"), que
-el World representa congelando la CPU ese numero de ticks.
+The scheduler DECIDES which process goes next; the dispatcher EXECUTES the context
+switch: saves outgoing process state in its PCB (including PC), loads the
+incoming one and charges a cost in ticks (the "context switch bursts"), which
+the World represents by freezing the CPU for that many ticks.
 """
 from typing import Optional
 

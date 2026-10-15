@@ -71,5 +71,5 @@ _ESTRATEGIAS = {
 def get_estrategia(nombre) -> Estrategia:
     clave = nombre.value if isinstance(nombre, EstrategiaMem) else str(nombre)
     if clave not in _ESTRATEGIAS:
-        raise ValueError(f"Estrategia de memoria desconocida: {nombre}")
+        raise ValueError(f"Unknown memory strategy: {nombre}")
     return _ESTRATEGIAS[clave]()
